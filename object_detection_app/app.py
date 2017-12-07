@@ -162,11 +162,11 @@ def detect_objects(image_path):
   result['original'] = encode_image(image.copy())
 
   for cls, new_image in new_images.items():
-    category = "NA"
+    category = "cat_%s" % str(cls)
     try:
       category = client.category_index[cls]['name']
     except:
-      pass
+      print("Failed to find cat %s" % repr(cls))
     result[category] = encode_image(new_image)
 
   return result
