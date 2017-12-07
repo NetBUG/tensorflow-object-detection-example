@@ -138,7 +138,7 @@ def draw_bounding_box_on_image(image, box, color='red', thickness=4):
 def encode_image(image):
   image_buffer = io.BytesIO()
   image.save(image_buffer, format='PNG')
-  imgstr = 'data:image/png;base64,{%s}' % base64.b64encode(image_buffer.getvalue())
+  imgstr = 'data:image/png;base64,%s' % base64.b64encode(image_buffer.getvalue()).decode("utf-8")
   return imgstr
 
 
