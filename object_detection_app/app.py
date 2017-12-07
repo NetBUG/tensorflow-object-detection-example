@@ -17,7 +17,7 @@
 
 
 import base64
-import cStringIO
+import io
 import sys
 import tempfile
 
@@ -136,10 +136,9 @@ def draw_bounding_box_on_image(image, box, color='red', thickness=4):
 
 
 def encode_image(image):
-  image_buffer = cStringIO.StringIO()
+  image_buffer = io.BytesIO()
   image.save(image_buffer, format='PNG')
-  imgstr = 'data:image/png;base64,{:s}'.format(
-      base64.b64encode(image_buffer.getvalue()))
+  imgstr = 'data:image/png;base64,{%s}' % base64.b64encode(image_buffer.getvalue())
   return imgstr
 
 
@@ -149,7 +148,9 @@ def detect_objects(image_path):
   image.thumbnail((480, 480), Image.ANTIALIAS)
 
   new_images = {}
-  for i in range(num_detections):
+  #print(type(num_detections))
+  sz = int(num_detections)
+  for i in range(sz):
     if scores[i] < 0.7: continue
     cls = classes[i]
     if cls not in new_images.keys():
@@ -160,8 +161,12 @@ def detect_objects(image_path):
   result = {}
   result['original'] = encode_image(image.copy())
 
-  for cls, new_image in new_images.iteritems():
-    category = client.category_index[cls]['name']
+  for cls, new_image in new_images.items():
+    category = "NA"
+    try:
+      category = client.category_index[cls]['name']
+    except:
+      pass
     result[category] = encode_image(new_image)
 
   return result
@@ -193,4 +198,4 @@ client = ObjectDetector()
 
 
 if __name__ == '__main__':
-  app.run(host='0.0.0.0', port=80, debug=False)
+  app.run(host='0.0.0.0', port=1080, debug=False)
